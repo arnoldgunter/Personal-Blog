@@ -1,0 +1,152 @@
+import { pb } from "../../../lib/pb";
+
+<try>
+    <@placeholder>
+        <div class="posts">
+            <h2>Loading…</h2>
+            <div/>
+        </div>
+    </@placeholder>
+
+    <@catch|err|>
+        <div class="posts">
+            <h5>Error: ${err.message}</h5>
+            <p>
+                <a href="/">Go back to home</a> or check out one of the other tags and posts below!
+            </p>
+            <aside/>
+        </div>
+    </@catch>
+
+    <div class="posts">
+        <h2>Posts for tag: ${$global.url.pathname.split("/").pop()}</h2>
+        <await|data|=fetchPostsByTag($global.url.pathname.split("/").pop())>
+            <for|post| of=data.posts>
+                <a href=`/post/${post.slug}` class="post">
+                    <span class="post-content">
+                        <small>
+                            ${new Intl.DateTimeFormat("en-US", {
+                                year: "numeric",
+                                month: "long",
+                                day: "numeric",
+                            }).format(new Date(post.created))}
+                        </small>
+                        <h5>${post.title}</h5>
+                        <p>${post.subtitle}</p>
+                    </span>
+                    <img
+                        src=`http://127.0.0.1:8090/api/files/${post.collectionId}/${post.id}/${post.cover}?thumb=300x150`
+                        alt=`${post.title}`
+                        class="post-image">
+                </a>
+            </for>
+        </await>
+    </div>
+</try>
+static const fetchPostsByTag = async (tagSlug) => {
+    const tagRecords = await pb.collection("tags").getFullList(1, {
+        filter: `slug="${tagSlug}"`,
+    });
+
+    if (tagRecords.length === 0) {
+        throw new Error("Tag not found");
+    }
+
+    const tagId = tagRecords[0].id;
+
+    const postsRes = await pb.collection("posts").getFullList({
+        filter: `tags~"${tagId}"`,
+        sort: "-created",
+        fields: "id,collectionId,collectionName,title,slug,created,cover,subtitle",
+    });
+
+    return {
+        posts: postsRes,
+    };
+};
+
+<style>
+    .posts {
+        width: clamp(200px, 100%, 996px);
+        min-height: 70vh;
+        margin: 2rem auto;
+        padding: 2rem 1rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+        overflow: hidden;
+    }
+
+    .posts h2 {
+        margin-bottom: 2rem;
+    }
+
+    .post {
+        position: relative;
+        width: 100%;
+        height: fit-content;
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--line-color);
+        text-decoration: none;
+        transition: all 0.2s ease-in-out;
+    }
+
+    .post::before {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 0%;
+        height: 1px;
+        background-color: #333;
+        z-index: 1000;
+        transition: all 0.3s ease-in-out;
+    }
+
+    .post:hover::before {
+        width: 100%;
+        transition: all 0.3s ease-in-out;
+    }
+
+    .post .post-content {
+        width: 100%;
+        max-height: 500px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .post h5 {
+        padding: 0px;
+        text-overflow: ellipsis;
+        line-clamp: 3;
+        -webkit-line-clamp: 3;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .post p {
+        margin-top: 0.5rem;
+        color: var(--text-secondary-color);
+        text-overflow: ellipsis;
+        line-clamp: 2;
+        -webkit-line-clamp: 2;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+    }
+
+    .post .post-image {
+        width: 100%;
+        max-width: 250px;
+        min-width: 150px;
+        aspect-ratio: 16 / 9;
+        object-fit: cover;
+        margin: 0.5rem 0rem 0rem auto;
+    }
+</style>

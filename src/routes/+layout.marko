@@ -5,27 +5,207 @@
     <link rel="icon" type="image/png" sizes="32x32" href="./favicon.png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="A basic Marko app.">
-    <title>${$global.meta.pageTitle || "Marko"}</title>
+    <title>${$global.meta.pageTitle || "Arnold Gunter Blog"}</title>
   </head>
   <body>
+    <if=($global.url.pathname !== "/")>
+      <header class="global-header">
+        <a href="/" class="global-header__title">
+          <img
+            src="/avatar.avif"
+            alt="Arnold Gunter Logo"
+            class="global-header__logo">
+          ${" "}Arnold Gunter
+        </a>
+        <search/>
+      </header>
+    </if>
     <${input.content}/>
+    <footer>
+      <p>
+        © ${new Date().getFullYear()} Arnold Gunter • All rights reserved. • <a href="/privacy">Privacy Policy</a>
+      </p>
+    </footer>
   </body>
 </html>
 
 <style>
+  /* ---------------------------------------------------------- */
+  /*  Fonts                                                     */
+  /* ---------------------------------------------------------- */
+  @font-face {
+    font-family: "Telex";
+    src: url("../fonts/Telex/Telex-Regular.ttf") format("truetype");
+    font-weight: 200;
+    font-style: normal;
+    font-display: swap;
+  }
+
+  @font-face {
+    font-family: "Oxygen-Bold";
+    src: url("../fonts/Oxygen/Oxygen-Bold.ttf") format("truetype");
+    font-weight: 900;
+    font-style: bold;
+    font-display: swap;
+  }
+
+  @font-face {
+    font-family: "Amaranth-Bold-Italic";
+    src: url("../fonts/Amaranth/Amaranth-BoldItalic.ttf") format("truetype");
+    font-weight: 900;
+    font-style: italic;
+    font-display: swap;
+  }
+
+  :root {
+    --background-color: #ffffff;
+    --line-color: #e4e4e4;
+    --text-color: #242424;
+    --text-secondary-color: #6b6b6b;
+  }
+
+  /* ---------------------------------------------------------- */
+  /*  Global + Fluid Type                                       */
+  /* ---------------------------------------------------------- */
+  html,
+  *,
+  *::before,
+  *::after {
+    /* global baseline: 14px → 20px */
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-size: clamp(0.875rem, 0.5vw + 0.7rem, 1.25rem);
+  }
+
   html,
   body {
-    font-family: system-ui;
+    font-family: "Telex", system-ui, sans-serif;
     padding: 0;
     margin: 0;
-    height: 100%;
-    color: #fff;
-    background: #15151e;
+    height: 100vh;
+    color: var(--text-color);
+    background-color: var(--background-color);
+    text-wrap: balance;
+
+    /* fluid body text: 16px → 24px */
+    font-size: clamp(0.85rem, 0.5vw + 0.7rem, 1.25rem);
+
+    line-height: 1.55;
   }
+
+  /* ---------------------------------------------------------- */
+  /*  Headings (Fluid)                                          */
+  /* ---------------------------------------------------------- */
+  h1 {
+    font-family: "Amaranth-Bold-Italic", system-ui, sans-serif;
+
+    font-size: clamp(2rem, 3vw + 1rem, 4rem);
+    line-height: 1.1;
+    color: var(--text-color);
+  }
+
+  h2 {
+    font-family: "Oxygen-Bold", system-ui, sans-serif;
+
+    font-size: clamp(1.6rem, 2.4vw + 0.8rem, 3rem);
+    line-height: 1.15;
+    color: var(--text-color);
+  }
+
+  h3 {
+    font-family: "Oxygen-Bold", system-ui, sans-serif;
+
+    font-size: clamp(1.4rem, 1.8vw + 0.6rem, 2.4rem);
+    line-height: 1.2;
+    color: var(--text-color);
+  }
+
+  h4 {
+    font-family: "Oxygen-Bold", system-ui, sans-serif;
+    font-size: clamp(1.2rem, 1.2vw + 0.4rem, 2rem);
+    color: var(--text-color);
+  }
+
+  h5 {
+    font-family: "Oxygen-Bold", system-ui, sans-serif;
+    font-size: clamp(1.1rem, 0.8vw + 0.3rem, 1.6rem);
+    color: var(--text-color);
+  }
+
+  h6 {
+    font-family: "Oxygen-Bold", system-ui, sans-serif;
+    font-size: clamp(1rem, 0.5vw + 0.2rem, 1.3rem);
+    color: var(--text-color);
+  }
+
+  /* ---------------------------------------------------------- */
+  /*  Paragraphs                                                */
+  /* ---------------------------------------------------------- */
+  p {
+    color: var(--text-secondary-color);
+    font-size: (0.75rem, 0.65rem + 0.35vw, 0.95rem);
+  }
+
+  /* ---------------------------------------------------------- */
+  /*  Inline Elements                                           */
+  /* ---------------------------------------------------------- */
   code {
-    color: #fc0;
+    font-size: clamp(0.9rem, 0.4vw + 0.6rem, 1.1rem);
+    font-family: monospace;
+    width: 100%;
   }
+
+  pre {
+    width: 100%;
+    overflow-x: scroll;
+    font-size: clamp(0.9rem, 0.4vw + 0.6rem, 1.1rem);
+  }
+
   a {
-    color: #09c;
+    font-size: clamp(1rem, 0.6vw + 0.7rem, 1.4rem);
+    color: var(--text-color);
+    text-decoration: underline;
+  }
+
+  a:hover {
+    color: var(--text-secondary-color);
+  }
+
+  small {
+    font-size: clamp(0.6rem, 0.3vw + 0.4rem, 0.8rem);
+    color: var(--text-secondary-color);
+  }
+
+  .global-header {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    border-bottom: 2px solid var(--line-color);
+    padding-block: 1rem;
+    text-align: center;
+    font-size: clamp(1rem, 0.6vw + 0.7rem, 1.4rem);
+  }
+
+  .global-header .global-header__title {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    gap: 0.5rem;
+  }
+
+  .global-header .global-header__logo {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+  }
+
+  footer {
+    font-size: 0.5rem;
+    border-top: 2px solid var(--line-color);
+    color: var(--text-secondary-color);
+    text-align: center;
+    padding-block: 3rem;
   }
 </style>

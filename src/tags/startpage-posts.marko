@@ -1,0 +1,184 @@
+import { pb } from "../lib/pb";
+
+<let/posts=[]>
+<let/page=1>
+<let/limit=2>
+<let/isLoading=false>
+<let/hasMore=true>
+
+<try>
+    <@placeholder>
+        <div class="loading">
+            Loading posts…
+        </div>
+    </@placeholder>
+
+    <@catch|err|>
+        <div class="error">
+            Error: ${err.message}
+        </div>
+    </@catch>
+
+    <await|data|=(
+        pb.collection("posts").getList(1, limit, { sort: "-created" })
+    )>
+
+        <div class="posts">
+            <for|post| of=(posts.length ? posts : data.items)>
+                <a href=`/post/${post.slug}` class="post">
+                    <span class="post-content">
+                        <small>
+                            ${new Intl.DateTimeFormat("en-US", {
+                                year: "numeric",
+                                month: "long",
+                                day: "numeric",
+                            }).format(new Date(post.created))}
+                        </small>
+                        <h5>${post.title}</h5>
+                        <p>${post.subtitle}</p>
+                    </span>
+                    <img
+                        src=`http://127.0.0.1:8090/api/files/${post.collectionId}/${post.id}/${post.cover}?thumb=300x150`
+                        alt=`${post.title}`
+                        class="post-image">
+                </a>
+            </for>
+            <lifecycle onMount() {
+                posts = data.items;
+                page = 2;
+                hasMore = data.page < data.totalPages;
+            }>
+            <if=hasMore>
+                <button
+                    class="load-more-btn"
+                    disabled=isLoading
+                    onClick() {
+                        if (isLoading || !hasMore) return;
+                        isLoading = true;
+
+                        pb.collection("posts")
+                            .getList(page, limit, { sort: "-created" })
+                            .then((newData) => {
+                                if (newData?.items?.length) {
+                                    posts = [...posts, ...newData.items];
+                                    page++;
+                                    hasMore = newData.page < newData.totalPages;
+                                } else {
+                                    hasMore = false;
+                                }
+                                isLoading = false;
+                            });
+                    }>
+                    <if=isLoading>
+                        Loading…
+                    </if>
+                    <else>Load more</else>
+                </button>
+            </if>
+        </div>
+    </await>
+</try>
+
+<style>
+    .posts {
+        width: clamp(200px, 100%, 996px);
+        margin: 2rem auto;
+        padding: 2rem 1rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+        overflow: hidden;
+    }
+
+    .post {
+        position: relative;
+        width: 100%;
+        height: fit-content;
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--line-color);
+        text-decoration: none;
+        transition: all 0.2s ease-in-out;
+    }
+
+    .post::before {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 0%;
+        height: 1px;
+        background-color: #333;
+        z-index: 1000;
+        transition: all 0.3s ease-in-out;
+    }
+
+    .post:hover::before {
+        width: 100%;
+        transition: all 0.3s ease-in-out;
+    }
+
+    .post .post-content {
+        width: 100%;
+        max-height: 500px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .post h5 {
+        padding: 0px;
+        text-overflow: ellipsis;
+        line-clamp: 3;
+        -webkit-line-clamp: 3;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .post p {
+        margin-top: 0.5rem;
+        color: var(--text-secondary-color);
+        text-overflow: ellipsis;
+        line-clamp: 2;
+        -webkit-line-clamp: 2;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+    }
+
+    .post .post-image {
+        width: 100%;
+        max-width: 250px;
+        min-width: 150px;
+        aspect-ratio: 16 / 9;
+        object-fit: cover;
+        margin: 0.5rem 0rem 0rem auto;
+    }
+
+    .load-more-btn {
+        margin-top: 1rem;
+        padding: 0.5rem 1.25rem;
+        cursor: pointer;
+        font-size: 0.85rem;
+        border-radius: 100px;
+        max-width: 200px;
+        border: none;
+        background-color: #000;
+        color: #fff;
+        transition: background-color 0.3s ease;
+    }
+
+    .load-more-btn[disabled] {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    .load-more-btn:hover:not([disabled]) {
+        background-color: #333;
+        transition: background-color 0.3s ease;
+    }
+</style>

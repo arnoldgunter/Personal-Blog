@@ -1,0 +1,18 @@
+<form action="/search" method="get">
+    <input type="search" name="q" placeholder="Search posts by title...">
+</form>
+
+
+<style>
+    input[type="search"] {
+        font-size: 0.85rem;
+        border-radius: 100px;
+        border: 1px solid var(--text-secondary-color);
+        outline: none;
+        padding: 0.5em 1em;
+        background-color: var(--line-color);
+    }
+    input[type="search"]::placeholder {
+        color: var(--text-secondary-color);
+    }
+</style>

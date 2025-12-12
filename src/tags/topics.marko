@@ -1,0 +1,86 @@
+import { pb } from "../lib/pb";
+
+<try>
+    <@placeholder>
+        <div>Loading tags...</div>
+    </@placeholder>
+
+    <@catch|err|>
+        <div class="error">
+            Error fetching tags: ${err.message}
+        </div>
+    </@catch>
+
+    <await|data|=(pb.collection("tags").getFullList())>
+        <div class="marquee">
+            <ul class="marquee__inner">
+                <for|tag| of=data>
+                    <li class="tag-list">
+                        <a href=`/tag/${tag.slug}` class="tag">
+                            ${tag.name}
+                        </a>
+                    </li>
+                </for>
+                <for|tag| of=data>
+                    <li class="tag-list">
+                        <a href=`/tag/${tag.slug}` class="tag">
+                            ${tag.name}
+                        </a>
+                    </li>
+                </for>
+            </ul>
+        </div>
+    </await>
+</try>
+
+<style>
+    .marquee {
+        display: flex;
+        overflow: hidden;
+        width: 100%;
+        transition: transform 0.3s ease-out;
+        mask-image: linear-gradient(
+            to right,
+            hsl(0 0% 0% / 0),
+            hsl(0 0% 0% / 1) 20%,
+            hsl(0 0% 0% / 1) 80%,
+            hsl(0 0% 0% / 0)
+        );
+    }
+
+    .marquee__inner {
+        display: flex;
+        white-space: nowrap;
+        will-change: transform;
+        animation: scroll 30s linear infinite;
+    }
+
+    .marquee__inner:hover {
+        animation-play-state: paused;
+    }
+
+    .tag-list,li {
+        list-style: none;
+        white-space: nowrap;
+        margin-inline: clamp(1rem, 2vw, 3rem);
+    }
+
+    .tag {
+        color: var(--text-secondary-color);
+        padding: 0.25rem 1rem;
+        font-weight: 100;
+        text-decoration: none;
+        text-transform: uppercase;
+        border-radius: 1000px;
+    }
+
+    .tag:hover {
+        text-decoration: underline;
+    }
+
+    @keyframes scroll {
+        to {
+            transform: translateX(-50%);
+        }
+    }
+</style>

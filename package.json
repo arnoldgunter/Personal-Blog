@@ -4,7 +4,9 @@
   "version": "1.0.0",
   "type": "module",
   "dependencies": {
-    "marko": "^6.0.0"
+    "marko": "^6.0.0",
+    "pocketbase": "^0.26.3",
+    "prismjs": "^1.30.0"
   },
   "devDependencies": {
     "@marko/run": "^0.9.3"

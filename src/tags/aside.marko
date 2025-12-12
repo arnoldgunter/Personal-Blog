@@ -1,0 +1,99 @@
+import { pb } from "../lib/pb";
+
+<try>
+    <@placeholder>
+        <div>Wird geladen...</div>
+    </@placeholder>
+
+    <@catch|err|>
+        <div>Fehler: ${err.message}</div>
+    </@catch>
+
+    <await|data|=fetchSidebarData()>
+        <div class="aside">
+            <h4>Latest Posts</h4>
+            <ul>
+                <for|post| of=data.latestPosts>
+                    <li>
+                        <a href=`/post/${post.slug}` class="post-link">
+                            <small>
+                                ${new Intl.DateTimeFormat("en-US", {
+                                    year: "numeric",
+                                    month: "long",
+                                    day: "numeric",
+                                }).format(new Date(post.created))}
+                            </small>
+                            <if=(post.title.length > 50)>
+                                <h6>${post.title.slice(0, 50)}...</h6>
+                            </if>
+                            <else>
+                                <h6>${post.title}</h6>
+                            </else>
+                        </a>
+                    </li>
+                </for>
+            </ul>
+
+            <h5>Tags</h5>
+            <ul class="tag-list">
+                <for|tag| of=data.tags>
+                    <li>
+                        <a href=`/tag/${tag.slug}` class="tag-link">
+                            ${tag.name}
+                        </a>
+                    </li>
+                </for>
+            </ul>
+        </div>
+    </await>
+</try>
+static const fetchSidebarData = async () => {
+    // Neueste Posts
+    const postsRes = await pb.collection("posts").getList(1, 5, {
+        sort: "-created",
+        fields: "id,collectionId,collectionName,title,slug,created,cover",
+    });
+
+    // Tags mit Count
+    const tags = await pb.collection("tags").getFullList({
+        sort: "name",
+    });
+
+    return {
+        latestPosts: postsRes.items,
+        tags: tags,
+    };
+};
+
+<style>
+    .aside {
+        padding: 1.5rem 1rem;
+        border-right: 2px solid var(--line-color);
+    }
+    .aside ul {
+        list-style: none;
+        padding: 0;
+        margin-top: 1rem;
+    }
+    .post-link {
+        text-decoration: none;
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 1rem;
+    }
+    .tag-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+    .tag-list li {
+        margin-bottom: 0.5rem;
+    }
+    .tag-link {
+        text-decoration: none;
+        padding: 0.5rem 1rem;
+        font-size: clamp(0.9rem, 0.4vw + 0.6rem, 1.1rem);
+        background-color: var(--line-color);
+        border-radius: 100px;
+    }
+</style>

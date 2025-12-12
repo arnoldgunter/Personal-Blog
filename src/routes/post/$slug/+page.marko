@@ -1,0 +1,118 @@
+import { pb } from "../../../lib/pb";
+import "prismjs";
+import "prismjs/themes/prism-tomorrow.css";
+
+<try>
+  <@placeholder>
+    <article>
+      <p>Loading…</p>
+      <div/>
+    </article>
+  </@placeholder>
+
+  <@catch|err|>
+    <div class="wrapper">
+      <aside aria-label="Article aside"/>
+      <article>
+        <h5>It looks like this post doesn't exist: ${err.message}</h5>
+        <a href="/">
+          Go back to home
+        </a>
+      </article>
+    </div>
+  </@catch>
+
+  <await|data|=fetchPost($global.url.pathname.split("/").pop())>
+    <div class="wrapper">
+      <aside/>
+      <div class="article-wrapper">
+        <article>
+          <h1>${data.post.title}</h1>
+          <small>
+            ${new Intl.DateTimeFormat("en-US", {
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+            }).format(new Date(data.post.created))}
+          </small>
+          <div class="cover">
+            <img
+              aria-label="Post Cover"
+              src=`http://127.0.0.1:8090/api/files/${data.post.collectionId}/${data.post.id}/${data.post.cover}`
+              width="100%">
+          </div>
+          <div class="content">
+            <inline-form/>
+            $!{data.post.content}
+          </div>
+        </article>
+      </div>
+    </div>
+  </await>
+</try>
+static const fetchPost = async (slug) => {
+  const postRes = await pb
+    .collection("posts")
+    .getFirstListItem(`slug="${slug}"`, {
+      expand: "tags",
+    });
+
+  if (!postRes) {
+    throw new Error("Beitrag nicht gefunden");
+  }
+
+  return {
+    post: postRes,
+  };
+};
+
+<html-script
+  data-goatcounter="https://arnoldgunter.goatcounter.com/count"
+  async
+  src="//gc.zgo.at/count.js"/>
+
+<style>
+  .wrapper {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 3fr;
+    gap: 2rem;
+  }
+  .article-wrapper {
+    max-width: 1000px;
+    width: 100%;
+    height: 100%;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+  .article {
+    width: 100%;
+  }
+  .cover {
+    margin-top: 1rem;
+    width: 100%;
+  }
+  .cover img {
+    width: 100%;
+    margin-bottom: 2rem;
+  }
+  .content img {
+    width: 100%;
+    height: auto;
+    margin: 1rem auto 1.5rem auto;
+    border-radius: 16px;
+  }
+  @media screen and (max-width: 860px) {
+    .wrapper {
+      grid-template-columns: 1fr;
+    }
+    .aside {
+      flex-grow: 1;
+      order: 2;
+    }
+    .article-wrapper {
+      flex-grow: 1;
+      order: 1;
+    }
+  }
+</style>

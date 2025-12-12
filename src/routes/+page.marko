@@ -1,33 +1,169 @@
 <div class="container">
   <header>
-    <img src="./logo.svg" alt="Marko" class="logo">
+
+    <header-form/>
+    <picture class="hero-image">
+      <source
+        type="image/avif"
+        srcset="/hero_image_769.avif 769w, /hero_image_1200.avif 1200w, /hero_image.avif 2000w"
+        sizes="100vw"
+        loading="lazy">
+      <img src="/hero_image.png" alt="Hero image">
+    </picture>
+    <div class="avatar-section">
+      <img
+        src="/avatar.avif"
+        alt="Arnold Gunter Profile Picture"
+        class="profile-picture">
+      <search class="search-component"/>
+    </div>
+    <div class="topics">
+      <topics/>
+    </div>
   </header>
   <main>
-    <p>
-      Edit
-      <code>./src/routes/+page.marko</code>
-       and save to reload.
+    <div class="about-me fade-in hidden">
+      <div class="about-me__content">
+        <h4>Hi! My name is Arnold Gunter,</h4>
+        <p>
+          I'm a software developer who loves blogging as much as coding. I spend
+          most of my time building projects for companies in React, React
+          Native, Next.js, and Marko.js.
+        </p>
+        <p>I can’t stand TypeScript and TailwindCSS 😅.</p>
+        <p>
+          I’m obsessed with cutting-edge tech and always chasing the next tool
+          worth learning.
+        </p>
+      </div>
+      <img
+        src="/about_image.avif"
+        alt="A man sitting on a desk working on a computer"
+        class="about-me-picture"
+        fetchpriority="high">
+    </div>
+    <h3 class="latest-posts-title fade-in hidden">
+      Latest posts
+    </h3>
+    <p class="fade-in hidden">
+      Click on a post and start enjoying my blog!
     </p>
-    <a href="https://markojs.com/docs/introduction/getting-started">
-      Learn Marko
-    </a>
+    <startpage-posts/>
   </main>
 </div>
-<mouse-mask/>
+
+<html-script
+  data-goatcounter="https://arnoldgunter.goatcounter.com/count"
+  async
+  src="//gc.zgo.at/count.js"/>
+
+<script>
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add("show");
+        observer.unobserve(entry.target);
+      }
+    });
+  });
+  document.querySelectorAll(".fade-in").forEach((el) => observer.observe(el));
+</script>
 
 <style>
   .container {
+    box-sizing: border-box;
+    min-height: 100vh;
+    width: 100vw;
+  }
+  header {
+    width: 100%;
+    overflow: hidden;
+  }
+  .hero-image img {
+    width: 100vw;
+    height: clamp(20vh, 40vw, 50vh);
+    display: block;
+    object-fit: cover;
+    border-bottom: 3px solid var(--text-secondary-color);
+    object-position: center center;
+  }
+  .avatar-section {
+    transform: translateY(-50%);
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+  }
+  .profile-picture {
+    width: clamp(100px, 15vw, 200px);
+    height: clamp(100px, 15vw, 200px);
+    border-radius: 50%;
+    margin-left: 5%;
+    border: 3px solid var(--line-color);
+    object-fit: cover;
+  }
+  .avatar-section form {
+    padding-top: clamp(50px, 6vw, 300px);
+  }
+  .topics {
+    margin-top: -2rem;
+    width: 100%;
+  }
+  main {
+    width: 100%;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    font-size: clamp(1em, 2vw, 2em);
-    padding: 1em;
-    box-sizing: border-box;
-    height: 100%;
-    width: 100%;
   }
-  img.logo {
-    width: 12em;
+  .about-me {
+    width: 95%;
+    max-width: 1200px;
+    margin-block: 3rem;
+    display: grid;
+    grid-template-columns: 1fr 1.5fr;
+    background-color: var(--line-color);
+    border-radius: 16px;
+    overflow: hidden;
+  }
+
+  .about-me__content {
+    width: 100%;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .about-me-picture {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  @media screen and (max-width: 600px) {
+    .about-me {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .latest-posts-title {
+    width: 80%;
+    text-align: center;
+    border-bottom: 1px solid var(--line-color);
+    padding-bottom: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .hidden {
+    opacity: 0;
+    transform: translateY(20px);
+    transition:
+      opacity 1s ease,
+      transform 1s ease;
+  }
+
+  .show {
+    opacity: 1;
+    transform: translateY(0);
   }
 </style>

@@ -1,0 +1,228 @@
+<let/showForm=true>
+
+<script>
+    if (localStorage.getItem("showNewsletterForm") === "false") {
+        showForm = false;
+    } else {
+        showForm = true;
+    }
+</script>
+
+<if=showForm>
+    <div class="ck-form-wrapper">
+        <button
+            class="ck-close"
+            onClick() {
+                showForm = false;
+                localStorage.setItem("showNewsletterForm", "false");
+            }>
+            ✕
+        </button>
+
+        <form
+            action="https://app.kit.com/forms/8825776/subscriptions"
+            method="post"
+            class="ck-form"
+            data-sv-form="8825776">
+
+            <div class="ck-alert ck-error" hidden>
+                Please fill all required fields correctly!
+            </div>
+
+            <div class="ck-alert ck-success" hidden>
+                Thank you for subscribing! Check your inbox (or spam folder) to
+                confirm your subscription.
+            </div>
+
+            <div class="ck-alert ck-loading" hidden>
+                Submitting...
+            </div>
+
+            <div class="ck-fields">
+                <h2 class="ck-title">
+                    Get the weekly newsletter!
+                </h2>
+                <input
+                    name="fields[first_name]"
+                    type="text"
+                    class="ck-input"
+                    placeholder="Your first name"
+                    required>
+
+                <input
+                    name="email_address"
+                    type="email"
+                    class="ck-input"
+                    placeholder="Your email address"
+                    required>
+
+                <button type="submit" class="ck-submit">
+                    Sign up
+                </button>
+            </div>
+        </form>
+    </div>
+</if>
+
+<lifecycle onMount() {
+    const src = "https://f.convertkit.com/ckjs/ck.5.js";
+    if (!document.querySelector(`script[src="${src}"]`)) {
+        const s = document.createElement("script");
+        s.src = src;
+        s.async = true;
+        document.body.appendChild(s);
+    }
+
+    const form = document.querySelector(".ck-form");
+    const loadingDiv = document.querySelector(".ck-loading");
+    const successDiv = document.querySelector(".ck-success");
+    const errorDiv = document.querySelector(".ck-error");
+
+    form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        loadingDiv.hidden = false;
+        successDiv.hidden = true;
+        errorDiv.hidden = true;
+
+        const data = new FormData(form);
+        fetch(form.action, {
+            method: "POST",
+            body: data,
+            mode: "no-cors",
+        })
+            .then(() => {
+                loadingDiv.hidden = true;
+                successDiv.hidden = false;
+                form.reset();
+            })
+            .catch(() => {
+                loadingDiv.hidden = true;
+                errorDiv.hidden = false;
+            });
+    });
+}>
+
+<style>
+    .ck-form-wrapper {
+        width: 100%;
+        position: relative;
+        padding: 1rem 0;
+        background: var(--text-secondary-color);
+        overflow: hidden;
+        transition:
+            opacity 0.3s ease,
+            height 0.3s ease;
+    }
+
+    .ck-close {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        background: transparent;
+        border: none;
+        font-size: 1.4rem;
+        color: var(--background-color);
+        cursor: pointer;
+    }
+
+    .ck-form {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+
+    [hidden] {
+        display: none !important;
+    }
+
+    .ck-fields {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        gap: 0.75rem;
+    }
+
+    .ck-title {
+        font-size: 1.2rem;
+        margin-right: 1rem;
+        color: var(--background-color);
+    }
+
+    .ck-input {
+        padding: 0.6rem 0.8rem;
+        border: none;
+        border-radius: 6px;
+        background: var(--background-color);
+        color: var(--text-color);
+        font-weight: 700;
+        font-size: 1rem;
+    }
+
+    .ck-submit {
+        padding: 0.7rem 1rem;
+        border: none;
+        border-radius: 6px;
+        background: var(--text-color);
+        color: #fff;
+        font-weight: 700;
+        cursor: pointer;
+        font-size: 1rem;
+    }
+
+    @media screen and (max-width: 1150px) {
+        .ck-fields {
+            flex-direction: column;
+            width: 100%;
+            max-width: 500px;
+            padding-inline: 1rem;
+        }
+
+        .ck-title {
+            margin-right: 0;
+        }
+
+        .ck-input {
+            width: 100%;
+        }
+
+        .ck-submit {
+            width: 100%;
+        }
+    }
+
+    .ck-alert {
+        margin-bottom: 0.75rem;
+        padding: 0.6rem;
+        font-weight: 700;
+        width: 90%;
+        text-align: center;
+    }
+
+    .ck-error {
+        background: #e74c3c;
+        color: #fff;
+        width: 100%;
+    }
+
+    .ck-success {
+        background: #2ecc71;
+        color: #fff;
+    }
+
+    .ck-loading {
+        background: #f39c12;
+        color: #fff;
+    }
+
+    .ck-form-wrapper[hidden] {
+        opacity: 0;
+        height: 0;
+        padding: 0;
+        margin: 0;
+        overflow: hidden;
+    }
+</style>
