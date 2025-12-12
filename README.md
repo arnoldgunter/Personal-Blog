@@ -1,22 +1,37 @@
-# Thanks for checking out Marko
+# Arnold Gunter Blog
 
-# Installation
+My personal blog about web development, built with [Marko.js](https://markojs.com/). Available at [arnoldgunter.com](https://arnoldgunter.com).
 
-```
-npm init marko -- --template basic
-cd marko-app
+## About
+
+This blog explores web development topics, best practices, and insights from hands-on experience.
+
+## Tech Stack
+
+- **Framework**: Marko.js
+- **Language**: JavaScript
+- **Styling**: CSS
+
+## Getting Started
+
+### Prerequisites
+- Node.js (v14 or higher)
+- npm or yarn
+
+### Installation
+
+```bash
 npm install
+```
+
+### Development
+
+```bash
 npm run dev
 ```
 
-## Overview
+### Build
 
-This project is powered by [@marko/run](https://github.com/marko-js/run).
-
-- Run `npm run dev` to start the development server
-- Run `npm run build` to build a production-ready node.js server
-- Run `npm run preview` to run the production server
-
-## Adding Pages
-
-Pages map to the directory structure. You can add additional pages by creating files/directories under `src/routes` with `+page.marko` files. Learn more in the [`@marko/run` docs](https://github.com/marko-js/run/#file-based-routing).
+```bash
+npm run build
+```
