@@ -4,6 +4,7 @@
   "version": "1.0.0",
   "type": "module",
   "dependencies": {
+    "@marko/run-adapter-netlify": "^3.0.2",
     "marko": "^6.0.0",
     "pocketbase": "^0.26.3",
     "prismjs": "^1.30.0"

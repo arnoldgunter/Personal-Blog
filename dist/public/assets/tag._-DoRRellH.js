@@ -1,2 +1,0 @@
-/* empty css         */import{f as o,g as s,h as a,i as e}from"./_DINbgtl_.js";import{$ as c,a as n,b as _}from"./_BthvGquq.js";o();const r=a(4,t=>e(t.a,t.e)),h=t=>{_(t.b)},m=a(2,t=>i(t,t.c[0])),i=a(3,t=>r(t,t.d?.message));s("m1",`<div class=posts><h5>Error: <!></h5><p><a href="/">Go back to home</a> or check out one of the other tags and posts below!</p>${n}</div>`,`Eb%lb/${c}&l`,h,m);s("m0","<div class=posts><h2>Loading…</h2><div></div></div>","b");
-//# sourceMappingURL=tag._-DoRRellH.js.map
